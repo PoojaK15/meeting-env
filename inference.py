@@ -3,7 +3,7 @@
 import argparse
 from env import MeetingEnv
 from grader import grade_summary
-
+from util import run_inference  
 
 def run_agent(mode):
     print("Starting Meeting Optimizer...\n")
@@ -66,3 +66,11 @@ app = FastAPI()
 @app.get("/")
 def home():
     return {"message": "Meeting Optimizer is running 🚀"}
+
+@app.post("/predict")
+def predict(data: dict):
+    text = data.get("text", "")
+    mode = data.get("mode", "basic")
+    
+    result = run_inference(text, mode)
+    return result
