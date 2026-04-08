@@ -58,3 +58,10 @@ if __name__ == "__main__":
 
     print("\n[FINAL SCORE]")
     print(score)
+
+import time
+
+print("App is running...")
+
+while True:
+    time.sleep(60)
