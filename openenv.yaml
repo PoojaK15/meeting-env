@@ -1,0 +1,7 @@
+name: meeting-agent
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - transformers
+      - torch
