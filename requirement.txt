@@ -9,3 +9,7 @@ sentencepiece
 
 # Optional: avoids warnings/errors in some models
 accelerate
+
+# Web API
+fastapi==0.111.2
+uvicorn[standard]==0.23.2

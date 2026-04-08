@@ -59,9 +59,10 @@ if __name__ == "__main__":
     print("\n[FINAL SCORE]")
     print(score)
 
-import time
+from fastapi import FastAPI
 
-print("App is running...")
+app = FastAPI()
 
-while True:
-    time.sleep(60)
+@app.get("/")
+def home():
+    return {"message": "Meeting Optimizer is running 🚀"}
