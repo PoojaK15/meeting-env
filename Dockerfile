@@ -5,4 +5,4 @@ COPY . /app
 
 RUN pip install -r requirements.txt
 
-CMD ["python", "main.py", "--mode", "basic"]
+CMD ["python", "inference.py", "--mode", "basic"]

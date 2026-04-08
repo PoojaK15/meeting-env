@@ -1,76 +1,60 @@
 # inference.py
-#from transformers import pipeline
-# -------- BASIC SUMMARY --------
-def basic_summary(text):
-    """
-    Simple summary: takes first 2 sentences
-    """
-    sentences = text.split(".")
-    sentences = [s.strip() for s in sentences if s.strip()]
-    
-    summary = ". ".join(sentences[:2])
-    return summary
+
+import argparse
+from env import MeetingEnv
+from grader import grade_summary
 
 
-# -------- TASK EXTRACTION --------
-def extract_tasks(text):
-    """
-    Extract tasks using simple rules
-    """
-    tasks = []
-    sentences = text.split(".")
+def run_agent(mode):
+    print("Starting Meeting Optimizer...\n")
 
-    for s in sentences:
-        s = s.strip()
-        if not s:
-            continue
+    env = MeetingEnv()
+    env.mode = mode
 
-        s_lower = s.lower()
+    state = env.reset()
+    print(f"[INITIAL STATE]: {state}\n")
 
-        if "will" in s_lower or "shall" in s_lower or "need to" in s_lower:
-            tasks.append(s)
+    done = False
+    step = 0
 
-    return tasks
+    actions = ["summarize", "extract_tasks", "end_meeting"]
 
+    while not done:
+        action = actions[step % len(actions)]
 
-# -------- AI SUMMARY --------
-def ai_summary(text):
-    """
-    AI-based summary using HuggingFace
-    (fallback to basic if not available)
-    """
-    try:
-        from transformers import pipeline
+        print(f"[STEP {step+1}] Action: {action}")
 
-        summarizer = pipeline("summarization")
-        result = summarizer(text, max_length=60, min_length=20, do_sample=False)
+        state, reward, done, _ = env.step(action)
 
-        return result[0]['summary_text']
+        print(f"→ State: {state}")
+        print(f"→ Reward: {reward}")
+        print(f"→ Done: {done}\n")
 
-    except Exception:
-        print("⚠ AI model not available, using basic summary.")
-        return basic_summary(text)
+        step += 1
+
+    print("[END] Meeting processing completed!\n")
+
+    return state
 
 
-# -------- MAIN FUNCTION --------
-def run_inference(text, mode="basic"):
-    """
-    Main function → used by env.py / main.py
-    """
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", type=str, default="basic", help="basic or ai")
 
-    if mode == "basic":
-        summary = basic_summary(text)
-        tasks = extract_tasks(text)
+    args = parser.parse_args()
 
-    elif mode == "ai":
-        summary = ai_summary(text)
-        tasks = extract_tasks(text)
+    final_state = run_agent(args.mode)
 
-    else:
-        raise ValueError("Mode must be 'basic' or 'ai'")
+    # FINAL SCORING
+    score = grade_summary(
+        final_state["summary"],
+        final_state["original_text"],
+        final_state["tasks"],
+        args.mode
+    )
 
-    return {
-        "summary": summary,
-        "tasks": tasks,
-        "original_text": text   
-    }
+    print("[FINAL OUTPUT]")
+    print(final_state)
+
+    print("\n[FINAL SCORE]")
+    print(score)

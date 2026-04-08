@@ -1,3 +1,13 @@
+---
+title: Meeting Optimizer
+emoji: 🤖
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_file: inference.py
+pinned: false
+---
+
 # Meeting Optimization Environment
 
 ## 📌 Problem

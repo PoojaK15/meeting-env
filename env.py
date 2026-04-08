@@ -1,6 +1,6 @@
 # env.py
 
-from inference import run_inference
+from util import run_inference
 
 class MeetingEnv:
     def __init__(self):
