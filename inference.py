@@ -60,17 +60,37 @@ if __name__ == "__main__":
     print(score)
 
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
 
+# ---- Request schema ----
+class StepRequest(BaseModel):
+    action: str
+
+# ---- RESET ----
+@app.post("/reset")
+def reset():
+    return {
+        "text": "Rahul will prepare slides. Priya will submit the report tomorrow. Team discussed project timeline.",
+        "summary": "",
+        "tasks": []
+    }
+
+# ---- STEP ----
+@app.post("/step")
+def step(req: StepRequest):
+    text = "Rahul will prepare slides. Priya will submit the report tomorrow. Team discussed project timeline."
+
+    result = run_inference(text)
+
+    return {
+        "state": result,
+        "reward": 1,
+        "done": req.action == "end_meeting"
+    }
+
+# ---- HEALTH ----
 @app.get("/")
 def home():
     return {"message": "Meeting Optimizer is running 🚀"}
-
-@app.post("/predict")
-def predict(data: dict):
-    text = data.get("text", "")
-    mode = data.get("mode", "basic")
-    
-    result = run_inference(text, mode)
-    return result

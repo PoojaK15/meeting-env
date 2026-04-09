@@ -5,3 +5,7 @@ dependencies:
   - pip:
       - transformers
       - torch
+      - sentencepiece
+      - accelerate
+      - fastapi
+      - uvicorn[standard]
