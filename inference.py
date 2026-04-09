@@ -75,7 +75,7 @@ class ResetRequest(BaseModel):
     mode: str = "basic"
 
 @app.post("/reset")
-def reset(req: ResetRequest):
+def reset(req: ResetRequest = ResetRequest()):
     global env_state
 
     env_state = {
