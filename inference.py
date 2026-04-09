@@ -3,7 +3,7 @@
 import argparse
 from env import MeetingEnv
 from grader import grade_summary
-from util import run_inference  
+from util import run_inference, basic_summary, ai_summary, extract_tasks
 
 def run_agent(mode):
     print("Starting Meeting Optimizer...\n")
@@ -64,33 +64,66 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-# ---- Request schema ----
+# ---- GLOBAL STATE ----
+env_state = {}
+
 class StepRequest(BaseModel):
     action: str
 
 # ---- RESET ----
+class ResetRequest(BaseModel):
+    mode: str = "basic"
+
 @app.post("/reset")
-def reset():
-    return {
+def reset(req: ResetRequest):
+    global env_state
+
+    env_state = {
         "text": "Rahul will prepare slides. Priya will submit the report tomorrow. Team discussed project timeline.",
         "summary": "",
-        "tasks": []
+        "tasks": [],
+        "mode": req.mode
     }
+
+    return env_state
 
 # ---- STEP ----
 @app.post("/step")
 def step(req: StepRequest):
-    text = "Rahul will prepare slides. Priya will submit the report tomorrow. Team discussed project timeline."
+    global env_state
 
-    result = run_inference(text)
+    action = req.action
+    mode = env_state.get("mode", "basic")
+
+    if action == "summarize":
+        if mode == "ai":
+            env_state["summary"] = ai_summary(env_state["text"])
+        else:
+            env_state["summary"] = basic_summary(env_state["text"])
+
+        reward = 1
+        done = False
+
+    elif action == "extract_tasks":
+        env_state["tasks"] = extract_tasks(env_state["text"])
+        reward = 1
+        done = False
+
+    elif action == "end_meeting":
+        reward = 2
+        done = True
+
+    else:
+        reward = 0
+        done = False
 
     return {
-        "state": result,
-        "reward": 1,
-        "done": req.action == "end_meeting"
+        "state": env_state,
+        "reward": reward,
+        "done": done
     }
 
-# ---- HEALTH ----
+# ---- HOME ----
 @app.get("/")
 def home():
     return {"message": "Meeting Optimizer is running 🚀"}
