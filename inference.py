@@ -82,7 +82,8 @@ def reset(req: ResetRequest):
         "text": "Rahul will prepare slides. Priya will submit the report tomorrow. Team discussed project timeline.",
         "summary": "",
         "tasks": [],
-        "mode": req.mode
+        "mode": req.mode,
+        "original_text": "Rahul will prepare slides. Priya will submit the report tomorrow. Team discussed project timeline."
     }
 
     return env_state
