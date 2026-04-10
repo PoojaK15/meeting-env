@@ -6,13 +6,14 @@ from grader import grade_summary
 from util import run_inference, basic_summary, ai_summary, extract_tasks
 
 def run_agent(mode):
+    print("[START]")
     print("Starting Meeting Optimizer...\n")
 
     env = MeetingEnv()
     env.mode = mode
 
     state = env.reset()
-    print(f"[INITIAL STATE]: {state}\n")
+    print(f"Initial State: {state}\n")
 
     done = False
     step = 0
@@ -22,20 +23,20 @@ def run_agent(mode):
     while not done:
         action = actions[step % len(actions)]
 
-        print(f"[STEP {step+1}] Action: {action}")
-
         state, reward, done, _ = env.step(action)
 
-        print(f"→ State: {state}")
-        print(f"→ Reward: {reward}")
-        print(f"→ Done: {done}\n")
+        print("[STEP]")
+        print(f"Action: {action}")
+        print(f"State: {state}")
+        print(f"Reward: {reward}")
+        print(f"Done: {done}\n")
 
         step += 1
 
-    print("[END] Meeting processing completed!\n")
+    print("[END]")
+    print("Meeting processing completed!\n")
 
     return state
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
