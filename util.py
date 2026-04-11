@@ -1,5 +1,5 @@
 # util.py
-#from transformers import pipeline
+
 # -------- BASIC SUMMARY --------
 def basic_summary(text):
     """
@@ -34,23 +34,29 @@ def extract_tasks(text):
 
 
 # -------- AI SUMMARY --------
+import os
+from openai import OpenAI
+
 def ai_summary(text):
-    """
-    AI-based summary using HuggingFace
-    (fallback to basic if not available)
-    """
     try:
-        from transformers import pipeline
+        client = OpenAI(
+            base_url=os.environ["API_BASE_URL"],
+            api_key=os.environ["API_KEY"]
+        )
 
-        summarizer = pipeline("summarization")
-        result = summarizer(text, max_length=60, min_length=20, do_sample=False)
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "Summarize the meeting text briefly."},
+                {"role": "user", "content": text}
+            ]
+        )
 
-        return result[0]['summary_text']
+        return response.choices[0].message.content
 
-    except Exception:
-        print("⚠ AI model not available, using basic summary.")
+    except Exception as e:
+        print("⚠ AI failed, using basic summary.")
         return basic_summary(text)
-
 
 # -------- MAIN FUNCTION --------
 def run_inference(text, mode="basic"):

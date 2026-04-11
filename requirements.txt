@@ -1,15 +1,4 @@
-# Core AI model library
-transformers==4.41.2
-
-# Deep learning backend (required by transformers)
-torch>=2.0.0
-
-# Optional: for better performance & tokenization
-sentencepiece
-
-# Optional: avoids warnings/errors in some models
-accelerate
-
-# Web API
 fastapi
 uvicorn[standard]
+openai>=1.0.0
+pydantic
